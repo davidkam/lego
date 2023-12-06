@@ -1,0 +1,8 @@
+version: '3'
+services:
+  sandbox:
+    build: ./
+    volumes:
+      - /Users/davidkam/Documents/work/massivemarmot/lego/pieceparser:/usr/src/app
+      - ./:/home/stuff
+    command: tail -f /dev/null
