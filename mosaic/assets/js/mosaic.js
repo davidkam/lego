@@ -92,12 +92,6 @@ function loadImage(e) {
 
 function drawCropper() {
   console.log("drawCropper");
-  if (typeof cropper !== 'undefined') {
-    console.log("cropper destroy");
-    cropper.destroy();
-    cropper = null;
-    imageImg.removeEventListener("ready", resizeCropBox);
-  }
   lm.mosaicWidth = null;
   lm.mosaicHeight = null;
   lm.mosaicResolution = null;
@@ -110,21 +104,10 @@ function drawCropper() {
   
   imageImg.addEventListener('ready', resizeCropBox);
 
-  function resizeCropBox() {
-    if (this.cropper.ready === true) {
-      let contData = this.cropper.getContainerData();
-      console.log("cropper", this.cropper);
-      this.cropper.setCropBoxData({ width: lm.mosaicWidth / 100 * contData.width, height: lm.mosaicHeight / 100 * contData.height });
-      this.cropper.getCroppedCanvas({
-        fillColor: '#fff',
-        imageSmoothingEnabled: false,
-        imageSmoothingQuality: 'high',
-      }).toBlob((blob) => {
-        console.log(blob);
-      });
-    } else {
-      return
-    }
+
+  if (cropper) {
+    console.log("cropper destroy");
+    cropper.destroy();
   }
 
   cropper = new Cropper(imageImg, {
@@ -138,6 +121,23 @@ function drawCropper() {
       //console.log(event.detail.height);
     },
   });
+}
+
+function resizeCropBox() {
+  if (cropper.ready === true) {
+    let contData = cropper.getContainerData();
+    console.log("cropper", cropper);
+    cropper.setCropBoxData({ width: lm.mosaicWidth / 100 * contData.width, height: lm.mosaicHeight / 100 * contData.height });
+    cropper.getCroppedCanvas({
+      fillColor: '#fff',
+      imageSmoothingEnabled: false,
+      imageSmoothingQuality: 'high',
+    }).toBlob((blob) => {
+      console.log(blob);
+    });
+  } else {
+    return
+  }
 }
 
 function init() {
