@@ -51,12 +51,33 @@
               </h2>
               <div id="selectOptionsOne" class="accordion-collapse collapse show">
                 <div class="accordion-body">
+                  <div class="form-group row">
+                    <label for="mosaicRatio" class="col-sm-3 col-form-label">
+                      Mosaic Ratio
+                      <button
+                        role="button"
+                        tabindex="100"
+                        class="btn btn-tiny btn-outline-danger"
+                        data-bs-toggle="popover"
+                        data-bs-trigger="focus"
+                        data-bs-html="true"
+                        data-bs-title="Mosaic Ratio"
+                        data-bs-sanitize="false"
+                        data-bs-content='Enter in a ratio in the format of <i>width:height</i>. (e.g. 16:9)'
+                      >
+                        ?
+                      </button>
+                    </label>
+                    <div class="col-sm-9">
+                      <input type="text" class="form-control form-control-tiny" id="mosaicRatio" aria-describedby="mosaicRatio" placeholder="<width>:<height>">
+                    </div>
+                  </div>
                   <div>
                     <label for="mosaicWidth" class="form-label">
                       Mosaic Width
                       <button
                         role="button"
-                        tabindex="0"
+                        tabindex="101"
                         class="btn btn-tiny btn-outline-danger"
                         data-bs-toggle="popover"
                         data-bs-trigger="focus" 
@@ -89,7 +110,7 @@
               </h2>
               <div id="selectOptionsTwo" class="accordion-collapse collapse">
                 <div class="accordion-body">
-                  <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+
                 </div>
               </div>
             </div>
@@ -101,7 +122,6 @@
               </h2>
               <div id="selectOptionsThree" class="accordion-collapse collapse">
                 <div class="accordion-body">
-                  <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
                 </div>
               </div>
             </div>
@@ -123,8 +143,8 @@
               <td id="mosaicResolution">N/A</td>
             </tr>
             <tr>
-              <td>Ratio</td>
-              <td id="mosaicRatio">N/A</td>
+              <td>Estimated Cost</td>
+              <td id="mosaicCost">N/A</td>
             </tr>
           </table>
           <div>

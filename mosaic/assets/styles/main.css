@@ -8,3 +8,14 @@ body {
   --bs-btn-font-size: 0.475rem;
   --bs-btn-border-radius: var(--bs-border-radius-sm);
 }
+
+.form-control-tiny {
+  min-height: calc(1.5em + .5rem + calc(var(--bs-border-width) * 2));
+  padding: .25rem .5rem;
+  font-size: 10px;
+  border-radius: var(--bs-border-radius-sm);
+}
+
+.table tr td {
+  width: 50%;
+}

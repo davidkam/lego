@@ -7,6 +7,7 @@ class LegoMosaic {
   #mosaicHeight = 0;
   #mosaicResolution = 0;
   #mosaicRatio = 0;
+  #mosaicCost = 0;
   #imageData = null;
   #mosaicData = null;
 
@@ -41,7 +42,7 @@ class LegoMosaic {
     document.getElementById("mosaicWidth").innerHTML = this.#mosaicWidth;
     document.getElementById("mosaicHeight").innerHTML = this.#mosaicHeight;
     document.getElementById("mosaicResolution").innerHTML = this.#mosaicWidth * this.#mosaicHeight;
-    document.getElementById("mosaicRatio").innerHTML = this.#mosaicWidth / this.#mosaicHeight + " (" + (this.#mosaicWidth / factor) + ":" + (this.#mosaicHeight / factor) + ")";
+    document.getElementById("mosaicRatio").value = (this.#mosaicWidth / factor) + ":" + (this.#mosaicHeight / factor);
   }
 
   get imageWidth() {
@@ -68,6 +69,7 @@ class LegoMosaic {
 let lm;
 let cropper;
 let imageImg;
+let mosaicRatio;
 let mosaicWidth;
 let mosaicHeight;
 
@@ -140,6 +142,28 @@ function resizeCropBox() {
     return
   }
 }
+
+function updateRatio() {
+  let regex =  /^(\d+):(\d+)$/
+  let m = mosaicRatio.value.match(regex);
+  // make sure entered in value is in the format <number>:<number>
+  if(m === null) {
+    lm.mosaicMetaData = null;
+    return;
+  }
+  let newWidth = parseInt(m[1]);
+  let newHeight = parseInt(m[2]);
+  // make sure both are non-zero
+  if (!newWidth || ! newHeight) {
+    lm.mosaicMetaData = null;
+    return;
+  }
+  let factor = Math.min(Math.floor(lm.imageWidth / 16 / newWidth), (lm.imageHeight / 16 / newHeight));
+  mosaicWidth.value = factor * 16 * newWidth;
+  mosaicHeight.value = factor * 16 * newHeight;
+  drawCropper();
+}
+
 function gcd(a,b) {
   if (!b) {
     return a;
@@ -149,6 +173,7 @@ function gcd(a,b) {
 
 function init() {
   imageImg = document.getElementById("image");
+  mosaicRatio = document.getElementById("mosaicRatio");
   mosaicWidth = document.getElementById("mosaicWidthRange");
   mosaicHeight = document.getElementById("mosaicHeightRange");
   mosaicResolution = document.getElementById("mosaicResolutionRange");
@@ -156,6 +181,7 @@ function init() {
   document.getElementById("uploadimage").addEventListener("change", loadImage, false);
   mosaicWidth.addEventListener("change", drawCropper);
   mosaicHeight.addEventListener("change", drawCropper);
+  mosaicRatio.addEventListener("blur", updateRatio);
 
   lm = new LegoMosaic()
 
