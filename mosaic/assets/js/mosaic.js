@@ -2,11 +2,13 @@ class LegoMosaic {
   #imageWidth = 0;
   #imageHeight = 0;
   #imageResolution = 0;
+  #imageRatio = 0;
   #mosaicWidth = 0;
   #mosaicHeight = 0;
   #mosaicResolution = 0;
-  #image = null;
-  #mosaic = null;
+  #mosaicRatio = 0;
+  #imageData = null;
+  #mosaicData = null;
 
   constructor() {
   }
@@ -21,30 +23,25 @@ class LegoMosaic {
     this.#imageHeight = height;
   }
 
-  get imageWidth() {
-    return this.#imageWidth;
-  }
-
-  get imageHeight() {
-    return this.#imageHeight;
-  }
-
-  get imageResolution() {
-    document.getElementById("imageResolution").innerHTML = this.#imageWidth * this.#imageHeight;
+  set imageMetadata(junk) {
     this.#imageResolution = this.#imageWidth * this.#imageHeight;
-    return this.#imageResolution;
+    this.#imageRatio = this.#imageWidth / this.#imageHeight;
+
+    let factor = gcd(this.#imageWidth, this.#imageHeight);
+    document.getElementById("imageResolution").innerHTML = this.#imageResolution
+    document.getElementById("imageRatio").innerHTML = this.#imageRatio + " (" + (this.#imageWidth / factor) + ":" + (this.#imageHeight / factor) + ")";
   }
 
-  set mosaicWidth(junk) {
-    this.#mosaicWidth = parseFloat(document.getElementById("mosaicWidth").value);
-  }
+  set mosaicMetaData(junk) {
+    this.#mosaicWidth = parseFloat(mosaicWidth.value);
+    this.#mosaicHeight = parseFloat(mosaicHeight.value);
+    this.#mosaicResolution = parseFloat(mosaicResolution.value);
 
-  set mosaicHeight(junk) {
-    this.#mosaicHeight = parseFloat(document.getElementById("mosaicHeight").value);
-  }
-
-  set mosaicResolution(junk) {
-    this.#mosaicResolution = parseFloat(document.getElementById("mosaicResolution").value);
+    let factor = gcd(this.#mosaicWidth, this.#mosaicHeight);
+    document.getElementById("mosaicWidth").innerHTML = this.#mosaicWidth;
+    document.getElementById("mosaicHeight").innerHTML = this.#mosaicHeight;
+    document.getElementById("mosaicResolution").innerHTML = this.#mosaicWidth * this.#mosaicHeight;
+    document.getElementById("mosaicRatio").innerHTML = this.#mosaicWidth / this.#mosaicHeight + " (" + (this.#mosaicWidth / factor) + ":" + (this.#mosaicHeight / factor) + ")";
   }
 
   get imageWidth() {
@@ -71,6 +68,8 @@ class LegoMosaic {
 let lm;
 let cropper;
 let imageImg;
+let mosaicWidth;
+let mosaicHeight;
 
 function loadImage(e) {
   let img = new Image();
@@ -85,25 +84,28 @@ function loadImage(e) {
     url.revokeObjectURL(src);
     lm.imageWidth = img.width;
     lm.imageHeight = img.height;
-    let junk = lm.imageResolution;
+    lm.imageMetadata = null;
+    let imageWidth = Math.floor(img.width / 16) * 16;
+    let imageHeight = Math.floor(img.height / 16) * 16;
+    mosaicWidth.min = 16;
+    mosaicWidth.max = imageWidth;
+    mosaicWidth.value = imageWidth;
+    mosaicWidth.step = 16;
+    mosaicHeight.min = 16;
+    mosaicHeight.max = imageHeight;
+    mosaicHeight.value = imageHeight;
+    mosaicHeight.step = 16;
     drawCropper();
   }
 }
 
 function drawCropper() {
   console.log("drawCropper");
-  lm.mosaicWidth = null;
-  lm.mosaicHeight = null;
-  lm.mosaicResolution = null;
+  console.log("lm1", lm);
+  lm.mosaicMetaData = null;
+  console.log("lm2", lm);
 
-  mosaicWidth = document.getElementById("mosaicWidth");
-  mosaicWidth.step = 100 / (lm.imageWidth / 16);
-
-  mosaicHeight = document.getElementById("mosaicHeight");
-  mosaicHeight.step = 100 / (lm.imageHeight / 16);
-  
   imageImg.addEventListener('ready', resizeCropBox);
-
 
   if (cropper) {
     console.log("cropper destroy");
@@ -111,7 +113,7 @@ function drawCropper() {
   }
 
   cropper = new Cropper(imageImg, {
-    aspectRatio: (lm.mosaicWidth / 100 * lm.imageWidth) / (lm.mosaicHeight / 100 * lm.imageHeight),
+    aspectRatio: lm.mosaicWidth / lm.mosaicHeight,
     cropBoxResizable: false,
     zoomOnWheel: false,
     zoomOnTouch: false,
@@ -126,8 +128,7 @@ function drawCropper() {
 function resizeCropBox() {
   if (cropper.ready === true) {
     let contData = cropper.getContainerData();
-    console.log("cropper", cropper);
-    cropper.setCropBoxData({ width: lm.mosaicWidth / 100 * contData.width, height: lm.mosaicHeight / 100 * contData.height });
+    cropper.setCropBoxData({ width: lm.mosaicWidth / lm.imageWidth * contData.width, height: lm.mosaicHeight / lm.imageHeight * contData.height });
     cropper.getCroppedCanvas({
       fillColor: '#fff',
       imageSmoothingEnabled: false,
@@ -139,14 +140,30 @@ function resizeCropBox() {
     return
   }
 }
+function gcd(a,b) {
+  if (!b) {
+    return a;
+  }
+  return gcd(b, a % b);
+}
 
 function init() {
-  document.getElementById("uploadimage").addEventListener("change", loadImage, false);
-  document.getElementById("mosaicWidth").addEventListener("change", drawCropper);
-  document.getElementById("mosaicHeight").addEventListener("change", drawCropper);
-
   imageImg = document.getElementById("image");
+  mosaicWidth = document.getElementById("mosaicWidthRange");
+  mosaicHeight = document.getElementById("mosaicHeightRange");
+  mosaicResolution = document.getElementById("mosaicResolutionRange");
+
+  document.getElementById("uploadimage").addEventListener("change", loadImage, false);
+  mosaicWidth.addEventListener("change", drawCropper);
+  mosaicHeight.addEventListener("change", drawCropper);
+
   lm = new LegoMosaic()
+
+  // dem popovers for help!
+  var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+  var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+    return new bootstrap.Popover(popoverTriggerEl)
+  })
 }
 
 window.onload = init;

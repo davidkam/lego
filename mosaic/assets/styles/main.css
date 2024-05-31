@@ -1,3 +1,10 @@
 body {
   font-size: 10px;
 }
+
+.btn-tiny {
+  --bs-btn-padding-y: 0rem;
+  --bs-btn-padding-x: 0.2rem;
+  --bs-btn-font-size: 0.475rem;
+  --bs-btn-border-radius: var(--bs-border-radius-sm);
+}
