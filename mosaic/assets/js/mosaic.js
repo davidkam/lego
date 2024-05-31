@@ -42,7 +42,8 @@ class LegoMosaic {
     document.getElementById("mosaicWidth").innerHTML = this.#mosaicWidth;
     document.getElementById("mosaicHeight").innerHTML = this.#mosaicHeight;
     document.getElementById("mosaicResolution").innerHTML = this.#mosaicWidth * this.#mosaicHeight;
-    document.getElementById("mosaicRatio").value = (this.#mosaicWidth / factor) + ":" + (this.#mosaicHeight / factor);
+    console.log("here");
+    mosaicRatio.value = (this.#mosaicWidth / factor) + ":" + (this.#mosaicHeight / factor);
   }
 
   get imageWidth() {
@@ -69,13 +70,14 @@ class LegoMosaic {
 let lm;
 let cropper;
 let imageImg;
+let uploadImage;
 let mosaicRatio;
 let mosaicWidth;
 let mosaicHeight;
 
 function loadImage(e) {
   let img = new Image();
-  let f = document.getElementById("uploadimage").files[0];
+  let f = uploadImage.files[0];
   let url = window.URL || window.webkitURL;
   let src = url.createObjectURL(f);
 
@@ -97,6 +99,7 @@ function loadImage(e) {
     mosaicHeight.max = imageHeight;
     mosaicHeight.value = imageHeight;
     mosaicHeight.step = 16;
+    mosaicRatio.disabled = false;
     drawCropper();
   }
 }
@@ -173,17 +176,23 @@ function gcd(a,b) {
 
 function init() {
   imageImg = document.getElementById("image");
+  uploadImage = document.getElementById("uploadImage")
   mosaicRatio = document.getElementById("mosaicRatio");
   mosaicWidth = document.getElementById("mosaicWidthRange");
   mosaicHeight = document.getElementById("mosaicHeightRange");
   mosaicResolution = document.getElementById("mosaicResolutionRange");
 
-  document.getElementById("uploadimage").addEventListener("change", loadImage, false);
+  uploadImage.value = '';
+  mosaicRatio.value = '';
+  mosaicRatio.disabled = true;
+
+  uploadImage.addEventListener("change", loadImage, false);
   mosaicWidth.addEventListener("change", drawCropper);
   mosaicHeight.addEventListener("change", drawCropper);
   mosaicRatio.addEventListener("blur", updateRatio);
 
   lm = new LegoMosaic()
+  console.log("lm",lm)
 
   // dem popovers for help!
   var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
